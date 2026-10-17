@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Past Simple & Past Continuous – Interactive Practice</title>
+<style>
+:root{--navy:#183153;--blue:#2764ae;--pale:#eef5ff;--green:#18794e;--red:#b42318;--gold:#fff0a6;--border:#d5deeb}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fb;color:#182230;line-height:1.5}
+header{background:linear-gradient(120deg,#183153,#3478c9);color:white;padding:22px 16px;text-align:center}
+header h1{margin:0 0 5px;font-size:clamp(22px,4vw,32px)}header p{margin:0}
+main{max-width:1050px;margin:18px auto;padding:0 12px 40px}
+.card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 3px 12px #1831530d}
+#gate{max-width:460px;margin:35px auto;text-align:center}input,button{font:inherit}
+#password{padding:12px;border:1px solid #aab9cc;border-radius:8px;width:100%;margin:8px 0 12px}
+button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}
+.primary{background:var(--blue);color:#fff}.secondary{background:#e6edf7;color:#183153}
+button:disabled{cursor:not-allowed;opacity:.65}
+.hidden{display:none!important}.section-title{color:var(--navy);margin:0 0 5px}.subtitle{color:#536579;margin:0 0 14px;font-size:14px}
+.progress{height:8px;background:#e2e8f0;border-radius:9px;overflow:hidden;margin:12px 0}.progress>div{height:100%;width:0;background:#2c9b68;transition:width .2s}
+.scorebar{position:sticky;top:0;z-index:5;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:bold}
+.question{border-top:1px solid #e4eaf2;padding:15px 0}.question:first-of-type{border-top:0}.qline{font-size:16px;font-weight:600}.num{color:var(--blue);font-weight:800;margin-right:5px}
+.options{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.option{background:#f4f7fb;border:1px solid #cbd5e1;color:#1c2b3a;text-align:left}.option:hover:not(:disabled){background:#e4efff;border-color:#6091d5}.option.correct{background:#d9f7e6;border-color:#23945e;color:#14532d}.option.wrong{background:#fee4e2;border-color:#d92d20;color:#912018}
+.answer-input{background:#fff0a6;border:2px solid #e2c84f;border-radius:7px;padding:10px;width:min(100%,440px);margin:10px 0}
+.check{display:block;margin:2px 0 8px}.feedback{padding:12px;border-radius:9px;margin-top:10px;font-size:14px}.feedback.good{background:#e4f7ec;border-left:4px solid #23945e}.feedback.bad{background:#fff0ef;border-left:4px solid #d92d20}.feedback strong{display:block;margin-bottom:4px}.explain{margin-top:5px}.translation{color:#334155}
+.final{font-size:18px;font-weight:800;color:var(--navy)}.tag{display:inline-block;background:#e8effa;color:#23466f;padding:3px 8px;border-radius:20px;font-size:12px;margin-left:5px}
+@media(max-width:600px){.card{padding:13px}.qline{font-size:15px}.scorebar{position:static}.option{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<header><h1>Past Simple & Past Continuous</h1><p>Interactive grammar practice · Instant feedback · Vietnamese explanations</p></header>
+<main>
+<section id="gate" class="card">
+<h2>Enter the password</h2><p>Type the password to unlock the exercises.</p>
+<input id="password" type="password" inputmode="numeric" placeholder="Password" autocomplete="off">
+<button class="primary" id="unlock">Start practice</button><p id="gateMsg" role="alert"></p>
+</section>
+<div id="app" class="hidden">
+<div class="scorebar"><span id="score">Score: 0 / 0</span><span id="done">Answered: 0 / 49</span></div>
+<div class="progress"><div id="progressFill"></div></div>
+<div class="card"><h2 class="section-title">Instructions</h2><p>Choose an answer or type your answer, then check it. Each question can be answered <b>only once</b>. After checking, the answer is locked and the explanation appears immediately.</p></div>
+<div id="exercises"></div>
+<div class="card"><div class="final" id="finalScore">Your final score: 0 / 49</div><p id="finalNote">Complete the questions to see your result.</p><button class="secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</button></div>
+</div>
+</main>
+<script>
+const sections = [
+{title:"Bài 12: Circle the correct answer in the bracket.",type:"choice",items:[
+{q:"I ______ — I didn't hear you come in.",opts:["was sleeping","slept"],a:"was sleeping",vi:"Tôi đang ngủ nên không nghe thấy bạn bước vào.",why:"Hành động đang diễn ra trong quá khứ (was sleeping) thì một hành động khác xảy ra/được nhận ra. Dùng quá khứ tiếp diễn để nhấn mạnh quá trình."},
+{q:"I ______ to see her twice, but she wasn't home.",opts:["was coming","came"],a:"came",vi:"Tôi đã đến thăm cô ấy hai lần, nhưng cô ấy không có nhà.",why:"“Twice” nói về số lần đã xảy ra và hoàn tất trong quá khứ, nên dùng quá khứ đơn."},
+{q:"“What ______?” — “I was watching TV.”",opts:["did you do","were you doing"],a:"were you doing",vi:"“Bạn đang làm gì vậy?” — “Tôi đang xem TV.”",why:"Câu trả lời diễn tả hành động đang diễn ra tại một thời điểm trong quá khứ, nên câu hỏi dùng quá khứ tiếp diễn."},
+{q:"He was a character who ______ from the rich and gave to the poor.",opts:["stole","was stealing"],a:"stole",vi:"Anh ấy là một nhân vật đã lấy của người giàu và cho người nghèo.",why:"Đây là hành động/sự việc đặc trưng được kể lại, dùng quá khứ đơn."},
+{q:"“Hey, did you talk to her?” — “Yes, I ______ to her.”",opts:["was talking","talked"],a:"talked",vi:"“Này, bạn đã nói chuyện với cô ấy chưa?” — “Rồi, tôi đã nói chuyện với cô ấy.”",why:"Câu hỏi dùng quá khứ đơn (did you talk), nên câu trả lời nói về việc đã hoàn thành cũng dùng quá khứ đơn."},
+{q:"I ______ home very late last night.",opts:["came","was coming"],a:"came",vi:"Tối qua tôi đã về nhà rất muộn.",why:"“Last night” chỉ thời điểm quá khứ và hành động về nhà đã hoàn tất, nên dùng quá khứ đơn."},
+{q:"When ______ a cold?",opts:["did you have","were you having"],a:"did you have",vi:"Bạn bị cảm lạnh khi nào?",why:"Hỏi thời điểm xảy ra một sự việc trong quá khứ thường dùng quá khứ đơn: did + chủ ngữ + động từ nguyên mẫu."},
+{q:"______ a good time in Paris? — “Yes, I had a blast!”",opts:["Were you having","Did you have"],a:"Did you have",vi:"Bạn đã có khoảng thời gian vui vẻ ở Paris chứ? — “Có, tôi đã vui hết mình!”",why:"Hỏi về trải nghiệm đã kết thúc trong chuyến đi dùng quá khứ đơn."},
+{q:"We ______ breakfast when she walked into the room.",opts:["had","were having"],a:"were having",vi:"Chúng tôi đang ăn sáng thì cô ấy bước vào phòng.",why:"Bữa sáng đang diễn ra thì hành động “cô ấy bước vào” xen ngang. Dùng quá khứ tiếp diễn cho hành động nền."},
+{q:"Last month I decided to buy a new car, and today I finally ______ it.",opts:["bought","was buying"],a:"bought",vi:"Tháng trước tôi quyết định mua một chiếc ô tô mới, và hôm nay cuối cùng tôi đã mua nó.",why:"“Bought” diễn tả hành động mua đã hoàn thành; dùng quá khứ đơn."}
+]},
+{title:"Bài 10: Put the verbs into the correct form (the past continuous tense).",type:"type",items:[
+{q:"When I phoned my friends, they (play) ______ computer games.",a:"were playing",vi:"Khi tôi gọi cho các bạn, họ đang chơi trò chơi điện tử.",why:"Hành động đang diễn ra khi một hành động khác xảy ra: were + V-ing."},
+{q:"Yesterday at six my sister (prepare) ______ dinner.",a:"was preparing",vi:"Hôm qua lúc sáu giờ, chị/em gái tôi đang chuẩn bị bữa tối.",why:"Có thời điểm cụ thể trong quá khứ (at six), nhấn mạnh hành động đang diễn ra: was + V-ing."},
+{q:"The children (play) ______ in the garden when it began to rain.",a:"were playing",vi:"Bọn trẻ đang chơi trong vườn thì trời bắt đầu mưa.",why:"Hành động chơi đang diễn ra bị hành động trời bắt đầu mưa xen ngang: were playing."},
+{q:"I (practise) ______ the guitar when she came home.",a:"was practising",vi:"Tôi đang luyện đàn ghi-ta thì cô ấy về nhà.",why:"Chủ ngữ I dùng was + V-ing cho hành động đang diễn ra."},
+{q:"They (not / cycle) ______ all day.",a:"weren't cycling",vi:"Họ đã không đạp xe suốt cả ngày.",why:"Phủ định quá khứ tiếp diễn: were not (weren't) + V-ing."},
+{q:"While Tom (work) ______ in his room, his friends (swim) ______ in the pool.",a:"was working|were swimming",vi:"Trong khi Tom đang làm việc trong phòng, các bạn của cậu ấy đang bơi trong hồ.",why:"Hai hành động diễn ra đồng thời với “while”: Tom was working; his friends were swimming."},
+{q:"I tried to tell my mother the truth but she (not / listen) ______.",a:"wasn't listening",vi:"Tôi đã cố nói sự thật với mẹ nhưng mẹ không lắng nghe.",why:"Diễn tả việc không lắng nghe đang diễn ra ở thời điểm tôi cố nói: wasn't + V-ing."},
+{q:"What (you / do) ______ yesterday?",a:"were you doing",vi:"Hôm qua bạn đang làm gì?",why:"Câu hỏi quá khứ tiếp diễn: từ để hỏi + was/were + chủ ngữ + V-ing."}
+]},
+{title:"Bài 8: Write sentences in the past continuous tense.",type:"type",items:[
+{q:"the snowman / melt / in the sun.",a:"The snowman was melting in the sun.",vi:"Người tuyết đang tan dưới ánh mặt trời.",why:"Chủ ngữ số ít “the snowman” dùng was + melting."},
+{q:"they / explore / a new territory.",a:"They were exploring a new territory.",vi:"Họ đang khám phá một vùng lãnh thổ mới.",why:"Chủ ngữ they dùng were + V-ing."},
+{q:"the boss / print out / a document.",a:"The boss was printing out a document.",vi:"Sếp đang in một tài liệu.",why:"“The boss” là chủ ngữ số ít, dùng was + printing out."},
+{q:"the boy / not / concentrate / on the task.",a:"The boy was not concentrating on the task.",vi:"Cậu bé không tập trung vào nhiệm vụ.",why:"Phủ định quá khứ tiếp diễn: was not + V-ing."},
+{q:"Michael / not / practise / on the piano.",a:"Michael was not practising on the piano.",vi:"Michael không luyện tập đàn piano.",why:"Theo đáp án cung cấp: was not + practising. “Practise” là động từ thêm -ing thành “practising” theo chính tả Anh-Anh."}
+]},
+{title:"Bài 15: Choose the correct answer in the bracket.",type:"choice",items:[
+{q:"Last night I ______ on my thesis and it took me a while to realise that my phone was ringing.",opts:["worked","was working"],a:"was working",vi:"Tối qua tôi đang làm luận văn và phải mất một lúc tôi mới nhận ra điện thoại đang reo.",why:"Đang làm luận văn là hành động kéo dài làm nền cho việc nhận ra điện thoại reo, nên dùng quá khứ tiếp diễn."},
+{q:"When you ______, I was in a meeting so I couldn't answer your call.",opts:["called","were calling"],a:"called",vi:"Khi bạn gọi, tôi đang họp nên không thể nghe máy.",why:"Cuộc gọi là hành động xảy ra tại một thời điểm, dùng quá khứ đơn: called."},
+{q:"David can never agree with Tim. They ______ (always argue).",opts:["always argue","are always arguing"],a:"are always arguing",vi:"David chẳng bao giờ đồng ý với Tim. Họ lúc nào cũng cãi nhau.",why:"Lưu ý: theo đáp án màu đỏ trong hình là “are always arguing” (hiện tại tiếp diễn với always để nhấn mạnh sự việc lặp lại gây khó chịu)."},
+{q:"“Why did you disagree with me at the meeting?” — “______ to make me look incompetent?”",opts:["Did you try","Were you trying"],a:"Were you trying",vi:"“Tại sao bạn phản đối tôi trong cuộc họp?” — “Bạn đang cố làm tôi trông có vẻ kém năng lực à?”",why:"Câu hỏi về ý định/hành động đang diễn ra trong lúc cuộc họp diễn ra, dùng quá khứ tiếp diễn."},
+{q:"Daisy ______ the buffet while I was looking for the drinks.",opts:["prepared","was preparing"],a:"was preparing",vi:"Daisy đang chuẩn bị tiệc buffet trong khi tôi tìm đồ uống.",why:"Hai hành động diễn ra cùng lúc; hành động của Daisy dùng quá khứ tiếp diễn."},
+{q:"Tim ______ home when the accident happened.",opts:["walked","was walking"],a:"was walking",vi:"Tim đang đi bộ về nhà thì tai nạn xảy ra.",why:"Tai nạn xảy ra xen ngang hành động đi bộ đang diễn ra: was walking."},
+{q:"I ______ to work, even when it rained.",opts:["was always walking","always walked"],a:"always walked",vi:"Tôi luôn đi bộ đến chỗ làm, kể cả khi trời mưa.",why:"Thói quen lặp lại trong quá khứ dùng quá khứ đơn: always walked."},
+{q:"Kelly ______ her speech when I walked in.",opts:["was finishing","finished"],a:"was finishing",vi:"Kelly đang hoàn thành bài phát biểu thì tôi bước vào.",why:"Hành động hoàn thành bài phát biểu đang diễn ra khi tôi bước vào, dùng quá khứ tiếp diễn."}
+]},
+{title:"Bài 16: Put the verbs into the past simple or past continuous tense.",type:"type",items:[
+{q:"I used my time well while I (wait) ______ for the train — I wrote some emails.",a:"was waiting",vi:"Tôi đã sử dụng thời gian hiệu quả trong khi chờ tàu — tôi đã viết vài email.",why:"Hành động chờ tàu đang diễn ra trong lúc viết email: was waiting."},
+{q:"I (not/work) ______ when my boss walked in my office. I was on Facebook.",a:"wasn't working",vi:"Tôi đã không làm việc khi sếp bước vào văn phòng. Tôi đang dùng Facebook.",why:"Hành động không làm việc đang diễn ra tại thời điểm sếp bước vào: wasn't working."},
+{q:"I saw a car crash when I (wait) ______ for the taxi.",a:"was waiting",vi:"Tôi nhìn thấy một vụ va chạm ô tô khi đang chờ taxi.",why:"“Saw” là hành động ngắn; “was waiting” là hành động đang diễn ra làm nền."},
+{q:"Tom (have) ______ long hair and a beard when he was at university.",a:"had",vi:"Tom để tóc dài và có râu khi còn học đại học.",why:"“Have” diễn tả đặc điểm/sở hữu trong quá khứ, dùng quá khứ đơn “had”."},
+{q:"It started raining while I (drive) ______ to work.",a:"was driving",vi:"Trời bắt đầu mưa khi tôi đang lái xe đi làm.",why:"Hành động lái xe đang diễn ra khi trời bắt đầu mưa: was driving."},
+{q:"What (you/do) ______ this time last year?",a:"were you doing",vi:"Bạn đang làm gì vào thời điểm này năm ngoái?",why:"Hỏi hành động đang diễn ra tại một thời điểm xác định trong quá khứ: were you doing."},
+{q:"I (not/call) ______ you at 10 o'clock as arranged because I was having a meeting.",a:"didn't call",vi:"Tôi đã không gọi cho bạn lúc 10 giờ như đã hẹn vì tôi đang họp.",why:"“Didn't call” là hành động không xảy ra, dùng quá khứ đơn phủ định: didn't + động từ nguyên mẫu."},
+{q:"I (still/sleep) ______ when my husband left for work this morning.",a:"was still sleeping",vi:"Tôi vẫn đang ngủ khi chồng tôi đi làm sáng nay.",why:"Ngủ là hành động đang diễn ra khi chồng rời đi: was still sleeping."}
+]},
+{title:"Bài 17: Past simple or past continuous. Use the passive form if necessary.",type:"type",items:[
+{q:"When she heard the phone ring, she (stop) ______ reading to answer it.",a:"stopped",vi:"Khi nghe thấy điện thoại reo, cô ấy dừng đọc để trả lời.",why:"“Heard” và “stopped” là các hành động nối tiếp nhau đã xảy ra, dùng quá khứ đơn."},
+{q:"My mother (read) ______ so she didn't see me walking past.",a:"was reading",vi:"Mẹ tôi đang đọc sách nên không nhìn thấy tôi đi ngang qua.",why:"Đọc sách là hành động đang diễn ra làm nền: was reading."},
+{q:"When the accident happened, thousands of people (pass) ______ through the airport.",a:"were passing",vi:"Khi tai nạn xảy ra, hàng nghìn người đang đi qua sân bay.",why:"Hành động đang diễn ra tại thời điểm tai nạn xảy ra: were passing."},
+{q:"I (have) ______ English lessons every week from the age of four onwards.",a:"had",vi:"Tôi học tiếng Anh hằng tuần từ năm bốn tuổi trở đi.",why:"Thói quen lặp lại trong quá khứ dùng quá khứ đơn: had."},
+{q:"They decided to leave the beach because it (get) ______ dark and they wanted to get home while there was still some light.",a:"was getting",vi:"Họ quyết định rời bãi biển vì trời đang tối dần và họ muốn về nhà khi vẫn còn chút ánh sáng.",why:"“Was getting dark” diễn tả sự thay đổi đang diễn ra: trời đang tối dần."},
+{q:"Kate already (think) ______ of leaving university before she failed her first year exams?",a:"Was Kate already thinking",vi:"Kate đã đang nghĩ đến việc rời trường đại học trước khi trượt kỳ thi năm nhất rồi sao?",why:"Theo đáp án cung cấp, câu hỏi dùng quá khứ tiếp diễn: Was + Kate + thinking."},
+{q:"Since your house had a pool, you (swim) ______ every day?",a:"did you swim",vi:"Vì nhà bạn có hồ bơi, bạn có bơi mỗi ngày không?",why:"Hỏi về thói quen trong quá khứ dùng quá khứ đơn: Did you swim…?" },
+{q:"The disaster (attract) ______ hundreds of people from the country to the city.",a:"attracted",vi:"Thảm họa đã thu hút hàng trăm người từ nông thôn đến thành phố.",why:"Sự việc đã xảy ra và hoàn tất, dùng quá khứ đơn. Câu chủ động nên dùng attracted."},
+{q:"Sorry I couldn't come on Monday, but I (work) ______ on my project.",a:"was working",vi:"Xin lỗi tôi không thể đến vào thứ Hai, nhưng lúc đó tôi đang làm dự án của mình.",why:"Hành động đang diễn ra trong khoảng thời gian được nhắc đến, dùng was working."},
+{q:"The national park (create) ______ to protect wildlife.",a:"was created",vi:"Vườn quốc gia được thành lập để bảo vệ động vật hoang dã.",why:"Vườn quốc gia nhận hành động “thành lập”, nên dùng bị động quá khứ đơn: was + past participle (created)."}
+]}
+];
+
+const total = sections.reduce((n,s)=>n+s.items.length,0);
+let answered=0, correct=0;
+const normalize=s=>s.toLowerCase().trim().replace(/[.!?]+$/,'').replace(/\s+/g,' ');
+function accepted(user, answer){
+  if(answer.includes('|')) return answer.split('|').some(a=>normalize(user)===normalize(a));
+  return normalize(user)===normalize(answer);
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function render(){
+ const root=document.getElementById('exercises');
+ sections.forEach((sec,si)=>{
+  const section=document.createElement('section'); section.className='card';
+  section.innerHTML=`<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap"><h2 class="section-title">${escapeHtml(sec.title)}</h2><button class="secondary reset-section" type="button">Reset this section</button></div><p class="subtitle">${sec.type==='choice'?'Choose one answer. Your choice is locked immediately.':'Type the answer, then press Check. You cannot change it after checking.'}</p>`;
+  sec.items.forEach((item,qi)=>{
+   const id=`q${si}_${qi}`;
+   const q=document.createElement('div');q.className='question';q.id=id;
+   q.innerHTML=`<div class="qline"><span class="num">${qi+1}.</span>${escapeHtml(item.q)}</div>`;
+   if(sec.type==='choice'){
+    const opts=document.createElement('div');opts.className='options';
+    item.opts.forEach(opt=>{
+     const b=document.createElement('button');b.className='option';b.textContent=opt;
+     b.addEventListener('click',()=>grade(item, id, opt, true, opts, b));
+     opts.appendChild(b);
+    });q.appendChild(opts);
+   }else{
+    const inp=document.createElement('input');inp.className='answer-input';inp.type='text';inp.autocomplete='off';inp.setAttribute('aria-label',`Answer ${qi+1}`);inp.placeholder='Type your answer here…';
+    const check=document.createElement('button');check.className='primary check';check.textContent='Check answer';
+    check.addEventListener('click',()=>{if(!inp.value.trim()){inp.focus();return;}grade(item,id,inp.value,false,null,null,inp,check);});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!check.disabled)check.click();});
+    q.append(inp,check);
+   }
+   section.appendChild(q);
+  });
+  section.querySelector('.reset-section').addEventListener('click',()=>resetSection(section));
+  root.appendChild(section);
+ });
+ document.getElementById('done').textContent=`Answered: 0 / ${total}`;
+ document.getElementById('finalScore').textContent=`Your final score: 0 / ${total}`;
+}
+function resetSection(section){
+ const questions=[...section.querySelectorAll('.question')];
+ questions.forEach(q=>{
+  if(q.dataset.locked==='1'){
+   answered--;
+   if(q.dataset.correct==='1')correct--;
+  }
+  delete q.dataset.locked;
+  delete q.dataset.correct;
+  q.querySelectorAll('.feedback').forEach(el=>el.remove());
+  q.querySelectorAll('button.option').forEach(b=>{
+   b.disabled=false;
+   b.classList.remove('correct','wrong');
+  });
+  const inp=q.querySelector('input.answer-input');
+  if(inp){inp.disabled=false;inp.value='';inp.style.borderColor='';}
+  const check=q.querySelector('button.check');
+  if(check)check.disabled=false;
+ });
+ document.getElementById('score').textContent=answered
+  ?`Score: ${correct} / ${answered} (${Math.round(correct/answered*100)}%)`
+  :`Score: 0 / 0`;
+ document.getElementById('done').textContent=`Answered: ${answered} / ${total}`;
+ document.getElementById('progressFill').style.width=`${answered/total*100}%`;
+ document.getElementById('finalScore').textContent=`Your final score: ${correct} / ${total}`;
+ document.getElementById('finalNote').textContent=answered===total
+  ?'All questions completed!'
+  :`You have ${total-answered} question(s) left.`;
+}
+function grade(item,id,user,isChoice,opts,chosen,inp,check){
+ const q=document.getElementById(id);if(q.dataset.locked==='1')return;
+ q.dataset.locked='1';
+ const ok=accepted(user,item.a);
+ q.dataset.correct=ok?'1':'0';
+ answered++;if(ok)correct++;
+ if(opts){[...opts.querySelectorAll('button')].forEach(b=>{b.disabled=true;if(accepted(b.textContent,item.a))b.classList.add('correct');});if(!ok)chosen.classList.add('wrong');}
+ if(inp){inp.disabled=true;check.disabled=true;inp.style.borderColor=ok?'#23945e':'#d92d20';}
+ const fb=document.createElement('div');fb.className='feedback '+(ok?'good':'bad');
+ const ans=item.a.includes('|')?item.a.split('|').join(' / '):item.a;
+ fb.innerHTML=`<strong>${ok?'Correct! ✓':'Incorrect. ✗ Correct answer: '+escapeHtml(ans)}</strong><div><b>Explanation:</b> ${escapeHtml(item.why)}</div><div class="translation"><b>Nghĩa cả câu:</b> ${escapeHtml(item.vi)}</div>`;
+ q.appendChild(fb);
+ document.getElementById('score').textContent=`Score: ${correct} / ${answered} (${Math.round(correct/answered*100)}%)`;
+ document.getElementById('done').textContent=`Answered: ${answered} / ${total}`;
+ document.getElementById('progressFill').style.width=`${answered/total*100}%`;
+ document.getElementById('finalScore').textContent=`Your final score: ${correct} / ${total}`;
+ document.getElementById('finalNote').textContent=answered===total?'All questions completed!':`You have ${total-answered} question(s) left.`;
+}
+document.getElementById('unlock').addEventListener('click',()=>{
+ const p=document.getElementById('password').value;
+ if(p==='367'){document.getElementById('gate').classList.add('hidden');document.getElementById('app').classList.remove('hidden');}
+ else document.getElementById('gateMsg').textContent='Incorrect password. Please try again.';
+});
+document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('unlock').click();});
+render();
+</script>
+</body>
+</html>
